@@ -4,12 +4,15 @@ import { galleryItems } from './gallery-items.js';
 // creating and rendering of gallary
 const gallaryContainer = document.querySelector('.gallery');
 
+// create markup for gallary
 const markupGallary = [];
+// requesite classes
 const classLink = "gallery__link";
 const classImg = "gallery__image";
 const classDiv = "gallery__item";
+// add gallary items to array
 for (let i = 0; i < galleryItems.length; i+=1) {
-    // create item: 
+    // create one item: 
     //create div 
     const div =  document.createElement('div');
     div.classList.add(classDiv);
@@ -25,33 +28,42 @@ for (let i = 0; i < galleryItems.length; i+=1) {
     img.alt = galleryItems[i].description;
     //add img into link
     link.append(img);
-    //console.log( link.nodeName);
     //add link into div
     div.append(link);
     //add item to array markupGallary
     markupGallary.push(div);        
 }
+// insert gallary content to HTML
 gallaryContainer.append(...markupGallary);
-
+// declare gallery event Listener
 gallaryContainer.addEventListener("click", gallaryContainerListener);
-
+// realize gallery event Listener 
 function gallaryContainerListener(event) {
-        const {target} = event;
-        // const {currentTarget} = event;
-        // console.log(currentTarget);
-        const isTargetImage = target.classList.contains(classImg);
-     if(isTargetImage) {
-        event.preventDefault();
-        event.target.src = event.target.dataset.source;
-        console.log(event.target.src);
-     };
+   const {target} = event;
+   const isTargetImage = target.classList.contains(classImg);
+      
+   if(isTargetImage) {
+      event.preventDefault();
 
+      let isModalOpen = false;
+      // create modal with basicLightbox
+      // add option {onClose: ()=>document.removeEventListener('keyup', closeModal)}
+      const instance = basicLightbox.create(`
+         <img src="${event.target.dataset.source}" width="800" height="600">
+      `, {onClose: ()=>document.removeEventListener('keyup', closeModal)});
+
+      isModalOpen = instance.show();
+      // create a gallaryListener if modal is open
+      if (isModalOpen) {
+         document.addEventListener('keyup', closeModal);
+      } 
+      // add functionality: close on click 'escape' button
+      function closeModal (event) {
+         if (event.key === 'Escape') {
+            instance.close();
+         }  
+         //console.log(event.key);       
+      }
+   };
 }
-//import * as basicLightbox from 'basiclightbox'
 
-// console.log(instance);
-// const instance = basicLightbox.create(`
-//     <img src="https://cdn.pixabay.com/photo/2019/05/14/16/43/himilayan-blue-poppy-4202825_1280.jpg" alt="I'm here" width="800" height="600">
-// `)
-
-// instance.show()
